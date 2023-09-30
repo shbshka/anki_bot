@@ -2,12 +2,11 @@ from dotenv import load_dotenv
 import pathlib
 import os
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from collections.abc import AsyncGenerator
-
 
 path = pathlib.Path(__file__).parent
 load_dotenv(str(path) + '/.env')
@@ -20,8 +19,14 @@ port = os.getenv('DB_PORT')
 database = os.getenv('DB_NAME')
 
 
+meta = MetaData()
+
 engine = create_async_engine(f'postgresql+asyncpg://{username}:{password}'
-                       f'@{host}/{database}',  pool_pre_ping=True,echo=True)
+                       f'@{host}/{database}',
+                       pool_pre_ping=True,
+                       echo=True,
+                       query_cache_size=0
+                       )
 
 async_session_maker = sessionmaker(
     bind=engine,

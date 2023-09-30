@@ -14,7 +14,7 @@ from sqlalchemy import select
 
 from core.database.database_commands import retrieve_data_from_db
 from core.database.database_models import UserBase
-from core.database.database_engine import async_session_maker
+from core.database.database_engine import async_session_maker, engine
 
 
 @dp.message_handler(commands=['start'])
@@ -27,7 +27,7 @@ async def send_start_message(message: types.Message):
 
     telegram_id = str(message.from_user.id)
     query = select(UserBase).where(UserBase.telegram_id == telegram_id)
-    result = await retrieve_data_from_db(query, async_session_maker)
+    result = await retrieve_data_from_db(query, engine)
     result = result.first()
 
     if result != None:
@@ -36,7 +36,7 @@ async def send_start_message(message: types.Message):
         menu = nav.main_menu_anonymous
 
     await bot.send_message(message.from_id,
-                           'Welcome to <b>Shoober LMS Bot</b>! 🤓\n'
+                           'Welcome to <b>ANKI Bot</b>! 🤓\n'
                            'This bot was designed to make your learning process'
                            ' easier and faster. 📈\n'
                            'To read the instructions, press /help',

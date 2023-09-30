@@ -10,7 +10,7 @@ from aiogram import types
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher import FSMContext
-from core.database.database_engine import engine, async_session_maker
+from core.database.database_engine import async_session_maker
 from core.database.database_models import UserBase
 from core.database.database_commands import add_item_to_db
 import markups as nav
@@ -77,11 +77,12 @@ async def request_credentials(call: types.CallbackQuery, state: FSMContext):
         await call.message.delete()
 
         async with state.proxy() as data:
-            new_user = UserBase(telegram_id=call.from_user.id,
+            new_user = UserBase(telegram_id=str(call.from_user.id),
                             username=data['username'],
                             name=data['name'],
-                            surname=data['surname'])
-        await add_item_to_db(item=new_user, my_async_session=async_session_maker)
+                            surname=data['surname'],
+                            )
+        await add_item_to_db(data=new_user, my_async_session=async_session_maker)
         await bot.send_message(call.from_user.id,
                                'You have been successfully registered! ✅',
                                reply_markup=nav.main_menu)
