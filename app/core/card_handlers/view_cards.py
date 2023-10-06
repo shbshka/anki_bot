@@ -7,7 +7,9 @@ Created on Thu Sep 21 04:37:50 2023
 """
 from loader import bot, dp
 from aiogram import types
-from aiogram.dispatcher.filters import Text
+from aiogram import F
+from aiogram.utils.formatting import Text
+from aiogram.filters import Command
 
 from sqlalchemy import select
 
@@ -16,8 +18,8 @@ from core.database.database_engine import async_session_maker
 from core.database.database_models import CardBase
 
 
-@dp.message_handler(Text(equals='My cards 📚'))
-@dp.message_handler(commands=['/mycards'])
+@dp.message(F.text=='My cards 📚')
+@dp.message(Command('mycards'))
 async def show_profile(message: types.Message):
     query = select(CardBase).where(CardBase.user_id==str(message.from_user.id))
     current_cards = await retrieve_data_from_db(query, async_session_maker)
@@ -25,7 +27,8 @@ async def show_profile(message: types.Message):
     cards = list()
     for card in current_cards:
         cards.append(card.name)
-    await bot.send_message(message.from_id,
+
+    await bot.send_message(message.from_user.id,
                            '<b>✨YOUR CARDS✨</b>\n\n'
                            f'{cards}',
                            parse_mode='HTML')

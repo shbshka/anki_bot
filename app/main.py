@@ -7,7 +7,7 @@ Created on Thu Aug 10 06:03:14 2023
 """
 import asyncio
 from core import dp
-from aiogram import executor
+from loader import bot
 
 from core.database.database_models import init_models
 
@@ -17,7 +17,7 @@ nest_asyncio.apply()
 
 async def run():
     asyncio.run(init_models())
-    executor.start_polling(dp)
+    await dp.start_polling(bot)
 
 
 loop = asyncio.get_event_loop()

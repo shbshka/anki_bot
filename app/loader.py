@@ -18,4 +18,4 @@ load_dotenv(str(path) + '/.env')
 
 
 bot = Bot(token=os.getenv('BOT_TOKEN'))
-dp = Dispatcher(bot=bot, storage=storage)
+dp = Dispatcher(storage=storage)
