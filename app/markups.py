@@ -18,6 +18,7 @@ send_help = KeyboardButton(text='Help 🤯')
 
 main_menu_anonymous = ReplyKeyboardBuilder()
 main_menu_anonymous.add(register, send_help)
+main_menu_anonymous.adjust(2)
 
 view_profile = KeyboardButton(text='My profile 🥷')
 delete_account = KeyboardButton(text='Delete account 🗑')
@@ -29,6 +30,7 @@ main_menu.add(view_profile,
               delete_account,
               send_help,
               show_cards)
+main_menu.adjust(2)
 
 
 #==========CARD MENU==========
@@ -36,6 +38,7 @@ add_card = KeyboardButton(text='Add card 📝')
 my_cards = KeyboardButton(text='My cards 📚')
 edit_cards = KeyboardButton(text='Edit cards 🖊')
 remove_card = KeyboardButton(text='Remove card 🗑')
+study = KeyboardButton(text='Study 😵‍💫')
 return_to_main_menu = KeyboardButton(text='Main Menu 🚪')
 
 card_menu = ReplyKeyboardBuilder()
@@ -43,7 +46,9 @@ card_menu.add(add_card,
               my_cards,
               edit_cards,
               remove_card,
+              study,
               return_to_main_menu)
+card_menu.adjust(3)
 
 
 #==========HELP MENU==========
@@ -71,7 +76,7 @@ if_change_info = InlineKeyboardBuilder().add(if_change_no, if_change_yes)
 #cancellation
 cancel_card = KeyboardButton(text='Cancel card appending ⛔️')
 
-if_cancel = ReplyKeyboardBuilder().add(cancel_card)
+if_cancel_card = ReplyKeyboardBuilder().add(cancel_card)
 
 
 cancel_user = KeyboardButton(text='Cancel registration ⛔️')

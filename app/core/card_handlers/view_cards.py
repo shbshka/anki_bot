@@ -8,7 +8,6 @@ Created on Thu Sep 21 04:37:50 2023
 from loader import bot, dp
 from aiogram import types
 from aiogram import F
-from aiogram.utils.formatting import Text
 from aiogram.filters import Command
 
 from sqlalchemy import select

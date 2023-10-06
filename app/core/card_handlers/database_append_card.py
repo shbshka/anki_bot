@@ -45,7 +45,7 @@ async def canced_card_adding(message: types.Message, state: FSMContext):
 async def send_invitation_message(message: types.Message, state: FSMContext):
     await bot.send_message(message.from_user.id,
                            'Please write the name of your card',
-                           reply_markup=nav.if_cancel.as_markup(resize_keyboard=True))
+                           reply_markup=nav.if_cancel_card.as_markup(resize_keyboard=True))
     await state.set_state(NewCard.name)
 
 
