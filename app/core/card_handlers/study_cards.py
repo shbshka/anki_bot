@@ -14,12 +14,12 @@ from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 import markups as nav
-from core.database.database_models import CardBase
+from core.database.database_models import CardBase, LearnStatusEnum
 from core.universal_functions.functions import define_pagination
-from core.database.database_commands import retrieve_data_from_db
+from core.database.database_commands import query_to_db
 from core.database.database_engine import async_session_maker
 
 import random
@@ -31,12 +31,12 @@ class Study(StatesGroup):
     back = State()
 
 
-@dp.callback_query(F.text == 'Cancel studying ⛔️')
-async def cancel_studying(call: types.CallbackQuery, state: FSMContext):
+@dp.message(F.text == 'Cancel studying ⛔️')
+async def cancel_studying(message: types.Message, state: FSMContext):
 
     """ Cancels studying """
 
-    await bot.send_message(call.from_user.id,
+    await bot.send_message(message.from_user.id,
                            'Studying cancelled 💔',
                            reply_markup=nav.card_menu \
                                .as_markup(resize_keyboard=True))
@@ -63,15 +63,21 @@ async def select_set(message: types.Message, state: FSMContext, page=1):
 
     query = select(CardBase.my_set) \
         .where(CardBase.user_id == str(message.from_user.id)).distinct()
-    items = await retrieve_data_from_db(query, async_session_maker)
+    items = await query_to_db(query, async_session_maker)
 
     study_keyboard = await define_pagination(items, page, 'study', None)
 
-    await bot.send_message(message.from_user.id,
-                           'Choose the set to study',
-                           reply_markup=study_keyboard \
-                               .as_markup(resize_keyboard=True))
-    await state.set_state(Study.front)
+    if study_keyboard != -1:
+        await bot.send_message(message.from_user.id,
+                               'Choose the set to study',
+                               reply_markup=study_keyboard \
+                                   .as_markup(resize_keyboard=True))
+        await state.set_state(Study.front)
+    else:
+        await bot.send_message(message.from_user.id,
+                               'You do not have any cards yet... 😞',
+                               reply_markup=nav.card_menu \
+                                   .as_markup(resize_keyboard=True))
 
 
 @dp.callback_query(lambda call: call.data.startswith('set_to_'))
@@ -112,10 +118,8 @@ async def study_card_front(message: types.Message, card_num=0):
     set_name = await state.get_data()
     set_name = ''.join([x for x in set_name.values()][0])
 
-    print(f'\n\n\n{set_name}\n\n\n')
-
     q = select(CardBase.front).where(CardBase.my_set == set_name)
-    my_set_fronts = await retrieve_data_from_db(q, async_session_maker)
+    my_set_fronts = await query_to_db(q, async_session_maker)
     my_set_fronts = my_set_fronts.scalars().all()
 
     card_front = my_set_fronts[card_num]
@@ -136,20 +140,16 @@ async def study_card_back(message: types.Message, state: FSMContext):
     card_fronts = await state.get_data()
     card_front = ''.join([x for x in card_fronts.values()][1])
 
-    print(f'\n\n\n{card_front}\n\n\n')
-
     q = select(CardBase.back).where(CardBase.front == card_front)
-    back = await retrieve_data_from_db(q, async_session_maker)
+    back = await query_to_db(q, async_session_maker)
     back = ''.join(back.scalars().all())
-
-    print(f'\n\n\n{back}\n\n\n')
 
     my_set = await state.get_data()
     my_set = [x for x in my_set.values()]
     my_set = my_set[1]
 
     q = select(CardBase.front).where(CardBase.my_set == my_set)
-    my_set_fronts = await retrieve_data_from_db(q, async_session_maker)
+    my_set_fronts = await query_to_db(q, async_session_maker)
     my_set_fronts = my_set_fronts.scalars().all()
 
     try:
@@ -161,8 +161,41 @@ async def study_card_back(message: types.Message, state: FSMContext):
     if back == input_back:
         await bot.send_message(message.from_user.id,
                                'Correct ✅')
+
+        q = select(CardBase.learn_status) \
+            .where(CardBase.back == back)
+        old_learn_status = await query_to_db(q, async_session_maker)
+        old_learn_status = old_learn_status.scalars().all()[0].value
+
+        if old_learn_status != 3:
+            new_learn_status = old_learn_status + 1
+
+        status_enum = LearnStatusEnum(new_learn_status)
+
+        q = update(CardBase) \
+            .values(learn_status=status_enum) \
+                .where(CardBase.user_id == str(message.from_user.id))
+        await query_to_db(q, async_session_maker)
+
+        await study_card_front(message=message,
+                               card_num=card_num)
     else:
         await bot.send_message(message.from_user.id,
-                               'Inorrect 😞')
+                               'Incorrect 😞')
+
+        q = select(CardBase.learn_status) \
+            .where(CardBase.back == back)
+        old_learn_status = await query_to_db(q, async_session_maker)
+        old_learn_status = old_learn_status.scalars().all()[0].value
+
+        if old_learn_status != 0:
+            new_learn_status = old_learn_status - 1
+
+        status_enum = LearnStatusEnum(new_learn_status)
+
+        q = update(CardBase) \
+            .values(learn_status=status_enum) \
+                .where(CardBase.user_id == str(message.from_user.id))
+        await query_to_db(q, async_session_maker)
         await study_card_front(message=message,
                                card_num=card_num)

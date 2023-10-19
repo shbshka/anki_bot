@@ -16,7 +16,7 @@ from typing import Any, Dict
 
 from core.database.database_engine import async_session_maker
 from core.database.database_models import CardBase, UserBase
-from core.database.database_commands import add_item_to_db, retrieve_data_from_db
+from core.database.database_commands import add_item_to_db, query_to_db
 
 from sqlalchemy import select
 
@@ -126,7 +126,7 @@ async def append_set(message: types.Message, state: FSMContext):
 
 async def append_to_db(message: types.Message, data: Dict[str, Any], positive: bool = True) -> None:
     query = select(UserBase).where(UserBase.telegram_id==str(message.from_user.id))
-    current_user = await retrieve_data_from_db(query, async_session_maker)
+    current_user = await query_to_db(query, async_session_maker)
     current_user = current_user.scalar_one()
     new_card = CardBase(
         name = data['card_name'],
@@ -134,8 +134,7 @@ async def append_to_db(message: types.Message, data: Dict[str, Any], positive: b
         back=data['back'],
         my_set=data['my_set'],
         user_id=current_user.telegram_id)
-    print(f'\n\n\n\n{new_card}\n\n\n\n')
     await add_item_to_db(new_card, async_session_maker)
     await bot.send_message(message.from_user.id,
                            'The card has been appended! ✅',
-                           reply_markup=nav.card_menu)
+                           reply_markup=nav.card_menu.as_markup())

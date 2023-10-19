@@ -43,12 +43,14 @@ async def define_pagination(items, page, data_type, call_data):
         right_button,
         cancel_button,
         )
+    try:
+        buttons = button_sets[page - 1]
+        for button in buttons:
+            keyboard.add(button)
 
-    buttons = button_sets[page - 1]
-    for button in buttons:
-        keyboard.add(button)
-
-    keyboard.adjust(3, 1, 4)
+        keyboard.adjust(3, 1, 4)
 
 
-    return keyboard
+        return keyboard
+    except IndexError:
+        return -1

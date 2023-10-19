@@ -13,17 +13,45 @@ from sqlalchemy.orm import (declarative_base,
                             mapped_column,
                             backref,
                             )
+import sqlalchemy.types as types
+
 from core.database.database_engine import engine
 from sqlalchemy import (Column,
                         Integer,
                         String,
-                        Text)
+                        Text,
+                        Enum)
 
 from typing import List, Optional
+
+import enum
 
 
 Base = declarative_base()
 metadata = MetaData()
+
+
+class LearnStatusEnum(enum.Enum):
+    bad = 0
+    medium = 1
+    good = 2
+    excellent = 3
+
+
+# class LearningStatusChoice(types.TypeDecorator):
+
+#     impl = types.String
+
+#     def __init__(self, choices, **kw):
+#         self.choices = dict(choices)
+#         super(LearningStatusChoice, self).__init__(**kw)
+
+#     def process_bind_param(self, value, dialect):
+#         return [k for k, v in self.choices.items() if v == value][0]
+
+#     def process_result_value(self, value, dialect):
+#         return self.choices[value]
+
 
 class UserBase(Base):
 
@@ -52,17 +80,14 @@ class CardBase(Base):
     front = mapped_column(Text)
     back = mapped_column(Text)
     my_set = mapped_column(Text)
-
-
-# class UserCardClass(Base):
-
-
-
-#     __tablename__ = 'association_table'
-
-#     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), primary_key=True)
-#     card_id: Mapped[int] = mapped_column(ForeignKey('cards.id'), primary_key=True)
-#     card: Mapped['CardBase'] = relationship()
+    tags = mapped_column(Text, default='')
+    # learn_status = mapped_column(LearningStatusChoice(
+    #     {'bad': 0, "medium": 1, 'good': 2, 'complete': 3},
+    #     nullable=False,
+    #     default=0
+    #     ))
+    learn_status = mapped_column('learn_status', Enum(LearnStatusEnum),
+                                 default=LearnStatusEnum.bad)
 
 
 async def init_models():
@@ -73,7 +98,6 @@ async def init_models():
         try:
             await conn.run_sync(UserBase.metadata.create_all)
             await conn.run_sync(CardBase.metadata.create_all)
-            # await conn.run_sync(UserCardClass.metadata.create_all)
             await conn.commit()
         finally:
             await conn.close()

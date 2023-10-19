@@ -29,7 +29,7 @@ async def add_item_to_db(data, my_async_session: AsyncSession):
             await session.close()
 
 
-async def retrieve_data_from_db(query, my_async_session):
+async def query_to_db(query, my_async_session):
 
     """ Connects to the database and returns the results by a given query """
 

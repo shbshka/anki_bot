@@ -17,7 +17,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql.expression import delete
 
-from core.database.database_commands import retrieve_data_from_db
+from core.database.database_commands import query_to_db
 from core.database.database_engine import async_session_maker, engine
 from core.database.database_models import CardBase
 
@@ -26,6 +26,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 
 from core.universal_functions.functions import define_pagination
+
+import markups as nav
 
 
 @dp.callback_query(lambda call: call.data == 'cancel_set')
@@ -49,13 +51,19 @@ async def choose_set_for_removal(message: types.Message, page=1):
 
     query = select(CardBase.my_set).where(CardBase.user_id == str(current_user_id)) \
         .distinct(CardBase.my_set)
-    sets = await retrieve_data_from_db(query, async_session_maker)
+    sets = await query_to_db(query, async_session_maker)
 
     set_keyboard = await define_pagination(sets, page, 'set', '_')
 
-    await bot.send_message(current_user_id,
+    if set_keyboard != -1:
+        await bot.send_message(current_user_id,
                             'From which set do you want to remove a card?',
                             reply_markup=set_keyboard.as_markup())
+    else:
+        await bot.send_message(current_user_id,
+                               'You do not have any cards yet... 😞',
+                               reply_markup=nav.card_menu \
+                                   .as_markup(resize_keyboard=True))
 
 
 @dp.callback_query(lambda call: call.data.startswith('set_to_'))
@@ -79,7 +87,7 @@ async def choose_card_for_removal(call: types.CallbackQuery, page=1, callback=No
         my_set = ' '.join(call.data.split(' ')[1::])
 
     q = select(CardBase.name).where(CardBase.my_set == my_set)
-    cards = await retrieve_data_from_db(q, async_session_maker)
+    cards = await query_to_db(q, async_session_maker)
 
     card_keyboard = await define_pagination(cards, page, 'card', my_set)
 
@@ -112,6 +120,6 @@ async def card_removal(call: types.CallbackQuery):
     card_name = ' '.join(call.data.split(' ')[1::])
 
     q = delete(CardBase).where(CardBase.name == card_name)
-    await retrieve_data_from_db(q, async_session_maker)
+    await query_to_db(q, async_session_maker)
 
     await bot.send_message(call.from_user.id, 'The card has been deleted! ✅')

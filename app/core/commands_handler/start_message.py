@@ -12,7 +12,7 @@ import markups as nav
 
 from sqlalchemy import select
 
-from core.database.database_commands import retrieve_data_from_db
+from core.database.database_commands import query_to_db
 from core.database.database_models import UserBase
 from core.database.database_engine import async_session_maker
 
@@ -27,7 +27,7 @@ async def send_start_message(message: types.Message):
 
     telegram_id = str(message.from_user.id)
     query = select(UserBase).where(UserBase.telegram_id == telegram_id)
-    result = await retrieve_data_from_db(query, async_session_maker)
+    result = await query_to_db(query, async_session_maker)
     result = result.first()
 
     if result != None:

@@ -12,7 +12,7 @@ from aiogram.filters import Command
 
 from sqlalchemy import select
 
-from core.database.database_commands import retrieve_data_from_db
+from core.database.database_commands import query_to_db
 from core.database.database_engine import async_session_maker
 from core.database.database_models import UserBase
 
@@ -24,7 +24,7 @@ import markups as nav
 async def show_profile(message: types.Message):
     query = select(UserBase) \
         .where(UserBase.telegram_id==str(message.from_user.id))
-    current_user = await retrieve_data_from_db(query, async_session_maker)
+    current_user = await query_to_db(query, async_session_maker)
     current_user = current_user.scalar_one()
     await bot.send_message(message.from_user.id,
                            '<b>✨YOUR PROFILE✨</b>\n\n'
