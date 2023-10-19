@@ -38,21 +38,6 @@ class LearnStatusEnum(enum.Enum):
     excellent = 3
 
 
-# class LearningStatusChoice(types.TypeDecorator):
-
-#     impl = types.String
-
-#     def __init__(self, choices, **kw):
-#         self.choices = dict(choices)
-#         super(LearningStatusChoice, self).__init__(**kw)
-
-#     def process_bind_param(self, value, dialect):
-#         return [k for k, v in self.choices.items() if v == value][0]
-
-#     def process_result_value(self, value, dialect):
-#         return self.choices[value]
-
-
 class UserBase(Base):
 
     """ An account for storing and accessing multiple learning cards """
@@ -81,11 +66,6 @@ class CardBase(Base):
     back = mapped_column(Text)
     my_set = mapped_column(Text)
     tags = mapped_column(Text, default='')
-    # learn_status = mapped_column(LearningStatusChoice(
-    #     {'bad': 0, "medium": 1, 'good': 2, 'complete': 3},
-    #     nullable=False,
-    #     default=0
-    #     ))
     learn_status = mapped_column('learn_status', Enum(LearnStatusEnum),
                                  default=LearnStatusEnum.bad)
 

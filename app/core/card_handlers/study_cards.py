@@ -101,7 +101,8 @@ async def determine_set(call: types.callback_query, state: FSMContext):
                            f'You are studying set {set_name}.\n'
                            'press \'Continue studying 📚\' to continue, '
                            'press \'Cancel studying ⛔️\' to stop.',
-                           reply_markup=nav.if_cancel_study.as_markup())
+                           reply_markup=nav.if_cancel_study \
+                               .as_markup(resize_reyboard=True))
     await state.update_data(initial=set_name)
 
     await state.set_state(Study.front)
