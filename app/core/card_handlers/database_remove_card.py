@@ -32,7 +32,7 @@ from core.universal_functions.functions import define_pagination
 async def cancel_removal(call: types.CallbackQuery):
     await call.message.delete()
     await bot.send_message(call.from_user.id,
-                           'Card removal has been cancelled ✅')
+                           'Cancelled ✅')
 
 
 @dp.message(F.text=='Remove card 🗑')

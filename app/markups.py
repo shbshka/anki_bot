@@ -39,7 +39,7 @@ my_cards = KeyboardButton(text='My cards 📚')
 edit_cards = KeyboardButton(text='Edit cards 🖊')
 remove_card = KeyboardButton(text='Remove card 🗑')
 study = KeyboardButton(text='Study 😵‍💫')
-return_to_main_menu = KeyboardButton(text='Main Menu 🚪')
+return_to_main_menu = KeyboardButton(text='Main menu 🚪')
 
 card_menu = ReplyKeyboardBuilder()
 card_menu.add(add_card,
@@ -48,7 +48,7 @@ card_menu.add(add_card,
               remove_card,
               study,
               return_to_main_menu)
-card_menu.adjust(3)
+card_menu.adjust(2)
 
 
 #==========HELP MENU==========
@@ -73,7 +73,9 @@ if_change_yes = InlineKeyboardButton(text='No, I want to change it',
 
 if_change_info = InlineKeyboardBuilder().add(if_change_no, if_change_yes)
 
-#cancellation
+
+#==========CANCELLATION==========
+
 cancel_card = KeyboardButton(text='Cancel card appending ⛔️')
 
 if_cancel_card = ReplyKeyboardBuilder().add(cancel_card)
@@ -82,3 +84,10 @@ if_cancel_card = ReplyKeyboardBuilder().add(cancel_card)
 cancel_user = KeyboardButton(text='Cancel registration ⛔️')
 
 if_cancel = ReplyKeyboardBuilder().add(cancel_user)
+
+
+cancel_study = KeyboardButton(text='Cancel studying ⛔️')
+continue_study = KeyboardButton(text='Continue studying 📚')
+
+if_cancel_study = ReplyKeyboardBuilder().add(cancel_study,
+                                              continue_study)

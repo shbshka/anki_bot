@@ -138,4 +138,4 @@ async def append_to_db(message: types.Message, data: Dict[str, Any], positive: b
     await add_item_to_db(new_card, async_session_maker)
     await bot.send_message(message.from_user.id,
                            'The card has been appended! ✅',
-                           reply_markup=nav.card_menu.as_markup(resize_keyboard=True))
+                           reply_markup=nav.card_menu)
