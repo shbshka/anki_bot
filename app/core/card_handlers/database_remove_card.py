@@ -28,11 +28,12 @@ from aiogram.filters.callback_data import CallbackData
 from core.universal_functions.functions import define_pagination
 
 
-@dp.callback_query(lambda call: call.data == 'cancel')
+@dp.callback_query(lambda call: call.data == 'cancel_set')
+@dp.callback_query(lambda call: call.data == 'cancel_card')
 async def cancel_removal(call: types.CallbackQuery):
     await call.message.delete()
     await bot.send_message(call.from_user.id,
-                           'Cancelled ✅')
+                           'Removal cancelled ✅')
 
 
 @dp.message(F.text=='Remove card 🗑')

@@ -21,15 +21,17 @@ main_menu_anonymous.add(register, send_help)
 main_menu_anonymous.adjust(2)
 
 view_profile = KeyboardButton(text='My profile 🥷')
+edit_account = KeyboardButton(text='Edit profile 🖊')
 delete_account = KeyboardButton(text='Delete account 🗑')
-send_help = KeyboardButton(text='Help 🤯')
 show_cards = KeyboardButton(text='Cards 🃏')
+send_help = KeyboardButton(text='Help 🤯')
 
 main_menu = ReplyKeyboardBuilder()
 main_menu.add(view_profile,
               delete_account,
-              send_help,
-              show_cards)
+              edit_account,
+              show_cards,
+              send_help)
 main_menu.adjust(2)
 
 

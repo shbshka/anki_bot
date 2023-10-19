@@ -43,13 +43,13 @@ async def cancel_studying(call: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
 
-@dp.callback_query(lambda call: call.data == 'finish_study')
+@dp.callback_query(lambda call: call.data == 'cancel_study')
 async def finish_studying(call: types.CallbackQuery, state: FSMContext):
 
     """ Completes studying """
 
     await bot.send_message(call.from_user.id,
-                           'Studying completed! ✅',
+                           'Studying cancelled 💔',
                            reply_markup=nav.card_menu \
                                .as_markup(resize_keyboard=True))
     await state.clear()

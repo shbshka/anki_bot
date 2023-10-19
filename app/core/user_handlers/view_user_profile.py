@@ -10,7 +10,7 @@ from aiogram import types
 from aiogram import F
 from aiogram.filters import Command
 
-from sqlalchemy import select, inspect
+from sqlalchemy import select
 
 from core.database.database_commands import retrieve_data_from_db
 from core.database.database_engine import async_session_maker

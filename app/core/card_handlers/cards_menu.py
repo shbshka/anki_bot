@@ -21,7 +21,7 @@ async def cards_menu(message: types.Message):
                            reply_markup=nav.card_menu.as_markup(resize_keyboard=True))
 
 
-@dp.message(F.text=='Main Menu 🚪')
+@dp.message(F.text=='Main menu 🚪')
 @dp.message(Command('main_menu'))
 async def return_to_main_menu(message: types.Message):
     await bot.send_message(message.from_user.id,

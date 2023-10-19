@@ -9,9 +9,12 @@ from aiogram import Bot, Dispatcher
 import os
 import pathlib
 from dotenv import load_dotenv
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage
+from aioredis import from_url
 
-storage = MemoryStorage()
+storage = RedisStorage(
+    redis=from_url('redis://localhost:6379')
+    )
 
 path = pathlib.Path(__file__).parents[1]
 load_dotenv(str(path) + '/.env')
